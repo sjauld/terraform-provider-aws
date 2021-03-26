@@ -86,6 +86,9 @@ func testAccMediaLiveInputSecurityGroupConfig(ip string) string {
 	return fmt.Sprintf(`
 resource "aws_media_live_input_security_group" "test" {
   ipv4_whitelist = ["%v/32"]
+  tags = {
+    "test" = "tf_acceptance"
+  }
 }
 `, ip)
 }

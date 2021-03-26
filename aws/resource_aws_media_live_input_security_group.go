@@ -26,7 +26,7 @@ func resourceAwsMediaLiveInputSecurityGroup() *schema.Resource {
 				Computed: true,
 			},
 			"ipv4_whitelist": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Required: true,
 				Elem: &schema.Schema{
 					Type:         schema.TypeString,
@@ -42,7 +42,7 @@ func resourceAwsMediaLiveInputSecurityGroupCreate(d *schema.ResourceData, meta i
 	conn := meta.(*AWSClient).medialiveconn
 
 	input := &medialive.CreateInputSecurityGroupInput{
-		WhitelistRules: expandIPv4Whitelist(d.Get("ipv4_whitelist").([]interface{})),
+		WhitelistRules: expandIPv4Whitelist(d.Get("ipv4_whitelist").(*schema.Set).List()),
 	}
 
 	if v := d.Get("tags").(map[string]interface{}); len(v) > 0 {
@@ -95,7 +95,7 @@ func resourceAwsMediaLiveInputSecurityGroupUpdate(d *schema.ResourceData, meta i
 	if d.HasChange("ipv4_whitelist") {
 		input := &medialive.UpdateInputSecurityGroupInput{
 			InputSecurityGroupId: aws.String(d.Id()),
-			WhitelistRules:       expandIPv4Whitelist(d.Get("ipv4_whitelist").([]interface{})),
+			WhitelistRules:       expandIPv4Whitelist(d.Get("ipv4_whitelist").(*schema.Set).List()),
 		}
 
 		_, err := conn.UpdateInputSecurityGroup(input)
